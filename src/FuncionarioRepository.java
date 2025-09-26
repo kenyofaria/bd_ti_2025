@@ -44,6 +44,17 @@ public class FuncionarioRepository {
         ps.close();
     }
 
+    public Funcionario obtem(int id) throws SQLException {
+        PreparedStatement ps = getConnection().prepareStatement("select id, nome from funcionarios where id = ?");
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Funcionario funcionario = new Funcionario(rs.getInt("id"), rs.getString("nome"));
+            return funcionario;
+        }
+        return null;
+    }
+
     public List<Funcionario> lista() throws SQLException {
         List<Funcionario> resultado = new ArrayList<>(); //armazena os funcionarios encontrados
 
@@ -56,6 +67,16 @@ public class FuncionarioRepository {
         }
         ps.close();
         return resultado;
+    }
+
+    public void adicionaContato(Contato contato) throws SQLException{
+        //insert into contatos (contato, tipo, funcionario_id) values ("robson@mail.com", "email", 4);
+        PreparedStatement ps = getConnection().prepareStatement("insert into contatos (contato, tipo, funcionario_id) values (?,?,?)");
+        ps.setString(1, contato.getContato());
+        ps.setString(2, contato.getTipo());
+        ps.setInt(3, contato.getFuncionario().getId());
+        ps.executeUpdate();
+        ps.close();
     }
 
 }
